@@ -5,8 +5,8 @@ function authenticate (req, res, next) {
         const token = req.headers.access_token;
         req.decoded = jwt.verify(token, process.env.SECRET);
         next();
-    } catch {
-        res.status(401).json({ msg: 'invalid token'})
+    } catch (err) {
+        next(err);
     }
 }
 
