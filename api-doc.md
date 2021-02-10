@@ -9,13 +9,9 @@
 res status 201
 ```
 {
-  "id": 13,
   "email": "abc@gmail.com",
-  "password": "$2b$10$VP9W4aZKqyqm4DPLBAaIWeMdM4w0m8tyaOkI68HLmTgkE/AvJwTHC",
   "firstName": "abc",
   "lastName": "def",
-  "updatedAt": "2021-02-10T09:37:27.568Z",
-  "createdAt": "2021-02-10T09:37:27.568Z",
   "profPic": "https://ui-avatars.com/api/?background=random&name=abc+def&rounded=true"
 }
 ```

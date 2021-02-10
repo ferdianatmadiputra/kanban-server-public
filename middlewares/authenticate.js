@@ -6,6 +6,7 @@ function authenticate (req, res, next) {
         req.decoded = jwt.verify(token, process.env.SECRET);
         next();
     } catch (err) {
+        console.log(err, '<<<<<<<<<<<<<< err dari authenticate')
         next(err);
     }
 }

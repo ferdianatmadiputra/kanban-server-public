@@ -26,12 +26,16 @@ class UserController {
     console.log(req.body)
     User.create({ email, password, firstName, lastName })
       .then((user) => {
-        res.status(201).json(user);
+        res.status(201).json({
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          profPic: user.profPic
+        });
       })
       .catch((err) => {
         console.log('...........sudah masuk error postregister controller..........')
         next(err)
-        // res.status(400).json(err); //nanti diganti dengan next
       });
   }
 
@@ -99,7 +103,6 @@ class UserController {
           id: user.id,
           email: user.email
         })
-        console.log('didalam if lalu res lho')
         res.status(200).json({access_token: token})
       } else {
         return User.create({
