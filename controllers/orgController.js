@@ -103,7 +103,7 @@ module.exports = class OrgController {
           UserId: user.id, OrganizationId
         })
         res.status(201).json(data)
-      }  else {
+      }  else { // findOne return null if no match
         throw {
           name: "customError",
           msg: "User already a member of the organization",

@@ -5,11 +5,12 @@ module.exports = class TaskController {
   static async getTasks(req, res, next) {
     let org_id = req.params.org_id;
     try {
-      Task.findAll({
+      let tasks = await Task.findAll({
         where: {
           OrganizationId: org_id
-        }
+        } 
       })
+      res.status(200).json(tasks);
     } catch (err) {
       next(err)
     }
@@ -17,27 +18,90 @@ module.exports = class TaskController {
 
   static async createTask(req, res, next) {
     let org_id = req.params.org_id;
-    let task_id = req.params.task_id;
-  }
-
-  static async createTask(req, res, next) {
-    let org_id = req.params.org_id;
-    let task_id = req.params.task_id;
+    try {
+      let newTask = await Task.create({
+        title: req.body.title,
+        category: req.body.category,
+        OrganizationId: org_id,
+        UserId: req.decoded.id,
+      })
+      res.status(201).json(newTask)
+    } catch (err) {
+      next(err)
+    }
   }
 
   static async putTaskById(req, res, next) {
-    let org_id = req.params.org_id;
+    //errorhandler org sudah di authorize
+    let OrganizationId = req.params.org_id;
     let task_id = req.params.task_id;
+    let UserId = req.decoded.id;
+    let {title, category} = req.body;
+    try {
+      let task = await Task.update({ title, category, OrganizationId, UserId },{
+        where: { id: task_id },
+        returning: true
+      })
+      if (task[0] == 1) {
+        console.log(task)
+        res.status(200).json(task[1][0])
+      } else {
+        throw {
+          name: "customError",
+          msg: "Task not found",
+          status: 404
+        }
+      }
+    } catch (err) {
+      next(err)
+    }
   }
 
   static async patchTaskById(req, res, next) {
+    //errorhandler org sudah di authorize
     let org_id = req.params.org_id;
     let task_id = req.params.task_id;
+    console.log(task_id)
+    let category = req.body.category
+    try {
+      let task = await Task.update({ category },{
+        where: { id: task_id },
+        returning: true
+      })
+      if (task[0] == 1) {
+        res.status(200).json(task[1][0])
+      } else {
+        throw {
+          name: "customError",
+          msg: "Task not found",
+          status: 404
+        }
+      }
+    } catch (err) {
+      next(err)
+    }
   }
 
   static async delTaskById(req, res, next) {
-    let org_id = req.params.org_id;
     let task_id = req.params.task_id;
+    try {
+      let deletedTask = await Task.destroy({
+        where: {
+          id: task_id
+        }
+      })
+      if (deletedTask == 1){
+        res.status(200).json({message: 'task deleted successfully'})
+      } else {
+        throw {
+          name: "customError",
+          msg: "Task not found",
+          status: 404
+        }
+      }
+    } catch (err) {
+      next(err)
+    }
   }
 
 }

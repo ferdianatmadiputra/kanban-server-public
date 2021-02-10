@@ -133,8 +133,114 @@ res status 201
 -------------------------------
 **TASKS**
 -------------------------------
+POST /org/:org_id/task
+req.headers: access_token
+
+res status 201
+```
+{
+  "id": 1,
+  "title": "task pertama",
+  "category": "todo",
+  "OrganizationId": 5,
+  "UserId": 11,
+  "updatedAt": "2021-02-10T11:22:21.642Z",
+  "createdAt": "2021-02-10T11:22:21.642Z"
+}
+```
+error response 400
+```
+{
+  "errors": [
+    "title cannot be empty" || "category cannot be empty"
+  ]
+}
+```
+-------------------------------
 GET /org/:org_id/task
 req.headers: access_token
 
 res status 200
 ```
+[
+  {
+    "id": 1,
+    "title": "task pertama",
+    "category": "todo",
+    "OrganizationId": 5,
+    "UserId": 11,
+    "createdAt": "2021-02-10T11:22:21.642Z",
+    "updatedAt": "2021-02-10T11:22:21.642Z"
+  },
+  {
+    "id": 2,
+    "title": "task kedua",
+    "category": "doing",
+    "OrganizationId": 5,
+    "UserId": 11,
+    "createdAt": "2021-02-10T11:26:26.091Z",
+    "updatedAt": "2021-02-10T11:26:26.091Z"
+  }
+]
+```
+-------------------------------
+PUT /org/:org_id/task/:task_id
+req.headers: access_token
+req.body: title(string), category(string)
+res status 200
+```
+{
+  "id": 4,
+  "title": "task keempat",
+  "category": "done",
+  "OrganizationId": 5,
+  "UserId": 11,
+  "createdAt": "2021-02-10T11:27:51.213Z",
+  "updatedAt": "2021-02-10T11:45:31.012Z"
+}
+```
+response error 404
+```
+{
+    "message": "Task not found"
+}
+```
+-------------------------------
+PATCH /org/:org_id/task/:task_id
+req.headers: access_token
+req.body: category(string)
+res status 200
+```
+{
+  "id": 4,
+  "title": "task keempat",
+  "category": "doing",
+  "OrganizationId": 5,
+  "UserId": 11,
+  "createdAt": "2021-02-10T11:27:51.213Z",
+  "updatedAt": "2021-02-10T11:45:31.012Z"
+}
+```
+response error 404
+```
+{
+    "message": "Task not found"
+}
+```
+-------------------------------
+DELETE /org/:org_id/task/:task_id
+req.headers: access_token
+req.body: not required
+res status 200
+```
+{
+  "message": "task deleted successfully"
+}
+```
+response error 404
+```
+{
+  "message": "Task not found"
+}
+```
+-------------------------------

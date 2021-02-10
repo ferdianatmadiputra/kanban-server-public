@@ -1,4 +1,4 @@
-module.exports = (err, req, res, next) => {
+module.exports = ((err, req, res, next) => {
   console.log('>>>>>>>>>>>>>>>> isi err adalah',err, '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< dari errorhandler', err.name);
   if (err.name === "SequelizeUniqueConstraintError" || err.name === "SequelizeValidationError") {
     let errors = err.errors.map((el) => el.message);
@@ -13,4 +13,4 @@ module.exports = (err, req, res, next) => {
       err
     });
   }
-};
+});
