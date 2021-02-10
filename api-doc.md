@@ -19,7 +19,12 @@ error response status 400
 ```
 {
   "errors": [
-    "This email has been used"
+    "This email has been used",
+    "first name cannot be empty",
+    "last name cannot be empty",
+    "password cannot be empty",
+    "minimum password length is 6 characters",
+    "invalid email format"
   ]
 }
 ```
@@ -32,6 +37,12 @@ res status 200
 ```
 {
   "access_token": "<access_token>"
+}
+```
+res error status 400
+```
+{
+  "message": "Invalid email or password"
 }
 ```
 -------------------------------
@@ -114,8 +125,9 @@ res status 200
 ```
 -------------------------------
 * POST /org/:org_id
+  add new member to an organization
 req.headers = access_token
-
+req.body = email(string)
 res status 201
 ```
 {
@@ -123,6 +135,12 @@ res status 201
   "OrganizationId": 5,
   "updatedAt": "2021-02-10T09:21:55.822Z",
   "createdAt": "2021-02-10T09:21:55.822Z"
+}
+```
+res status 400
+```
+{
+  "message": "User already joined the organization"
 }
 ```
 -------------------------------
@@ -148,7 +166,8 @@ error response 400
 ```
 {
   "errors": [
-    "title cannot be empty" || "category cannot be empty"
+    "title cannot be empty",
+    "category cannot be empty"
   ]
 }
 ```
@@ -198,7 +217,7 @@ res status 200
 response error 404
 ```
 {
-    "message": "Task not found"
+  "message": "Error Task not found"
 }
 ```
 -------------------------------
@@ -220,7 +239,7 @@ res status 200
 response error 404
 ```
 {
-    "message": "Task not found"
+  "message": "Error Task not found"
 }
 ```
 -------------------------------
@@ -236,7 +255,41 @@ res status 200
 response error 404
 ```
 {
-  "message": "Task not found"
+  "message": "Error Task not found"
 }
 ```
 -------------------------------
+
+**Global Error Response**
+
+res error 401
+```
+{
+  "message": "invalid token"
+}
+```
+res error 401
+```
+{
+  "message": "Unauthorized"
+}
+```
+res error 404
+```
+{
+  "message": "Error not found"
+}
+```
+res error 404
+```
+{
+  "message": "Error Organization not found"
+}
+```
+
+res error 500
+```
+{
+  "message": "internal server error"
+}
+```

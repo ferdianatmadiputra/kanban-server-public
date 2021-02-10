@@ -1,4 +1,5 @@
 const { Organization, User, UserOrganization } = require('../models/index');
+const createError = require('http-errors');
 
 module.exports = class OrgController {
 
@@ -10,20 +11,17 @@ module.exports = class OrgController {
         name
       })
       let OrganizationId = newOrg.id;
-      let data = await UserOrganization.create({
+      await UserOrganization.create({
         UserId, OrganizationId
       })
       res.status(201).json(newOrg)
-
     } catch (err) {
       next(err);
     }
-
   }
 
   static async getOrg(req, res, next) {
     let UserId = req.decoded.id;
-
     try {
       let user = await User.findOne({
         include: {
@@ -35,7 +33,6 @@ module.exports = class OrgController {
             attributes: ['profPic','id', 'firstName', 'lastName'],
             through: {attributes:[]}
           }],
-
         },
         where: {id : UserId}
       })
@@ -43,44 +40,18 @@ module.exports = class OrgController {
     } catch (err) {
       next(err);
     }
-
-
-    // try {
-    //   let organizations = await Organization.findAll({
-    //     include: {
-    //       model: User,
-    //       attributes: ['profPic','id', 'firstName', 'lastName'],
-    //       required: false,
-    //       right: true,
-    //       through: {attributes:[]}
-    //     },
-    //     where: {'$Users.id$': UserId}
-    //   })
-    //   res.status(200).json(organizations)
-    // } catch (err) {
-    //   next(err);
-    // }
-
   }
 
   static async delOrg(req, res, next) {
     let org_id = req.params.org_id;
     try {
-      let data = Organization.destroy({
+      await Organization.destroy({
         where: { id: org_id }
       })
-      if (!data) { // if id not found, data value is 0
-        throw {
-          name: "customError",
-          msg: "Error not found",
-          status: 404
-        };
-      } else {
-        res.status(200).json({ message: 'organization deleted  successfully' })
-      }
+      res.status(200).json({ message: 'organization deleted  successfully' })
     } catch(err) {
         next(err)
-      }
+    }
   }
 
   static async addMember(req, res, next) { 
@@ -92,23 +63,20 @@ module.exports = class OrgController {
           email 
         },
       })
-      let isNonMember = await UserOrganization.findOne({
+      let isMember = await UserOrganization.findOne({
         where: {
           UserId: user.id,
           OrganizationId
         }
       })
-      if (isNonMember) {
+      console.log(isMember)
+      if (!isMember) {
         let data = await UserOrganization.create({
           UserId: user.id, OrganizationId
         })
-        res.status(201).json(data)
+        res.status(201).json(data);
       }  else { // findOne return null if no match
-        throw {
-          name: "customError",
-          msg: "User already a member of the organization",
-          status: 404
-        }
+        throw createError(400, 'User already joined the organization')
       }
     } catch (err) {
       next(err);

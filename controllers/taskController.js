@@ -1,4 +1,5 @@
 const { User, Organization, Task } = require('../models/index');
+const createError = require('http-errors');
 
 module.exports = class TaskController {
   //authorize sudah menghandle keabsahan user id dan org id
@@ -46,11 +47,7 @@ module.exports = class TaskController {
         console.log(task)
         res.status(200).json(task[1][0])
       } else {
-        throw {
-          name: "customError",
-          msg: "Task not found",
-          status: 404
-        }
+        throw createError(404, 'Error Task not found')
       }
     } catch (err) {
       next(err)
@@ -71,11 +68,7 @@ module.exports = class TaskController {
       if (task[0] == 1) {
         res.status(200).json(task[1][0])
       } else {
-        throw {
-          name: "customError",
-          msg: "Task not found",
-          status: 404
-        }
+        throw createError(404, 'Error Task not found')
       }
     } catch (err) {
       next(err)
@@ -93,11 +86,7 @@ module.exports = class TaskController {
       if (deletedTask == 1){
         res.status(200).json({message: 'task deleted successfully'})
       } else {
-        throw {
-          name: "customError",
-          msg: "Task not found",
-          status: 404
-        }
+        throw createError(404, 'Error Task not found')
       }
     } catch (err) {
       next(err)

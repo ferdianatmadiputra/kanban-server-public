@@ -1,29 +1,13 @@
 const { User } = require("../models/index");
 const { comparePass } = require("../helpers/bcrypt");
 const { generateToken } = require("../helpers/jwt");
+const createError = require('http-errors');
 
 const {OAuth2Client} = require('google-auth-library');
-
-/**
- * PROSES REGISTER
- * 1. HTTP request dengan data req body email dan password
- * 2. hash password melalui hooks
- * 3. create user dijalankan dan data user tersimpan di database
- */
-
-/**
- * PROSES LOGIN
- * 1. cek user ada apa nggak di database (berdasarkan email)
- * 2. kalau tidak ada, lempar error
- * 3. kalau ada, bandingkan password pakai bcrypt
- * 4. kalau password salah, lempar error
- * 5. kalau password sama, berarti user berhasil login dan return access_token (jwt)
- */
 
 class UserController {
   static postRegister(req, res, next) {
     let { email, password, firstName, lastName } = req.body;
-    console.log(req.body)
     User.create({ email, password, firstName, lastName })
       .then((user) => {
         res.status(201).json({
@@ -34,7 +18,6 @@ class UserController {
         });
       })
       .catch((err) => {
-        console.log('...........sudah masuk error postregister controller..........')
         next(err)
       });
   }
@@ -48,18 +31,11 @@ class UserController {
     })
       .then((user) => {
         if (!user)
-          throw { 
-            name: "customError",
-            msg: "Invalid email or password",
-            status: 400
-          };
+          throw createError(400, 'Invalid email or password');
         const comparedPassword = comparePass(password, user.password);
         if (!comparedPassword) 
-          throw {
-            name: "customError",
-            msg: "Invalid email or password",
-            status: 400 
-          };
+          throw createError(400, 'Invalid email or password');
+
         const access_token = generateToken({
           id: user.id,
           email: user.email,
@@ -126,6 +102,7 @@ class UserController {
     })
     .catch(err => {
       console.log(err)
+      next(err)
     })
   }
 
