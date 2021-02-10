@@ -1,5 +1,5 @@
 const { User } = require("../models/index");
-const { comparePassword } = require("../helpers/bcrypt");
+const { comparePass } = require("../helpers/bcrypt");
 const { generateToken } = require("../helpers/jwt");
 
 const {OAuth2Client} = require('google-auth-library');
@@ -29,6 +29,7 @@ class UserController {
         res.status(201).json(user);
       })
       .catch((err) => {
+        console.log('...........sudah masuk error postregister controller..........')
         next(err)
         // res.status(400).json(err); //nanti diganti dengan next
       });
@@ -48,7 +49,7 @@ class UserController {
             msg: "Invalid email or password",
             status: 400
           };
-        const comparedPassword = comparePassword(password, user.password);
+        const comparedPassword = comparePass(password, user.password);
         if (!comparedPassword) 
           throw {
             name: "customError",
@@ -58,6 +59,9 @@ class UserController {
         const access_token = generateToken({
           id: user.id,
           email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          profPic: user.profPic
         });
         res.status(200).json({ access_token });
       })
@@ -69,8 +73,9 @@ class UserController {
   static googleLogin(req, res, next) {
     const client = new OAuth2Client(process.env.CLIENT_ID);
     let email;
-    let name;
-    let avatar;
+    let firstName;
+    let lastName;
+    let profPic;
     client
     .verifyIdToken({
       idToken: req.body.googleToken,
@@ -80,8 +85,9 @@ class UserController {
       const payload = ticket.getPayload();
       console.log(payload);
       email = payload.email;
-      name = payload.name;
-      avatar = payload.picture;
+      firstName = payload.given_name;
+      lastName = payload.family_name;
+      profPic = payload.picture;
 
       return User.findOne({ where: { email }})
     })
@@ -98,12 +104,18 @@ class UserController {
       } else {
         return User.create({
           email,
-          password: process.env.USER_PWD_GOOGLE
+          password: process.env.USER_PWD_GOOGLE,
+          firstName,
+          lastName,
+          profPic
         })
         .then(registeredUser => {
           let token = generateToken({
             id: registeredUser.id,
-            email: registeredUser.email
+            email: registeredUser.email,
+            firstName: registeredUser.firstName,
+            lastName: registeredUser.lastName,
+            profPic: registeredUser.profPic
           })
           res.status(201).json({access_token: token})
         })

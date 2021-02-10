@@ -1,13 +1,23 @@
-const { User } = require('../models/index');
+const { UserOrganization } = require('../models/index');
 
 function authorize (req, res, next) {
-    let id = req.decoded.id;
-    User.findByPk(id)
-    .then((user) => {
-        if (!user) {
-            res.status(401).json({msg: 'not authorized'})
+    let user_id = req.decoded.id;
+    let org_id = req.params.org_id;
+    UserOrganization.findOne({
+        where: {
+            UserId: user_id,
+            OrganizationId: org_id
+        }
+    })
+    .then((isValid) => {
+        if (isValid) {
+            next();
         } else {
-            next()
+            throw {
+                name: "customError",
+                msg: "Not authorized",
+                status: 401
+            };
         }
     })
     .catch(err => {
