@@ -103,8 +103,6 @@ module.exports = class OrgController {
             include: {
               model: User
             }
-            // attributes: ['title','category','UserId'],
-            // through: {attributes:[]},
           }
         ]
       })
