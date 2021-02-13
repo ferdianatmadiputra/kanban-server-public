@@ -148,6 +148,18 @@ res status 400
   "message": "User already joined the organization"
 }
 ```
+res status 401
+```
+{
+  "message": "Error User not a member of this org"
+}
+```
+res status 404
+```
+{
+  "message": "Error User not found"
+}
+```
 -------------------------------
 -------------------------------
 **TASKS**
@@ -155,6 +167,10 @@ res status 400
 * POST /org/:org_id/task
 
 req.headers: access_token\
+req.body:\
+      title\
+      category\
+      email\
 res status 201:
 ```
 {

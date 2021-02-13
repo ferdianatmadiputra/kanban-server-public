@@ -1,4 +1,4 @@
-const { User, Organization, Task } = require('../models/index');
+const { User, Organization, Task, UserOrganization } = require('../models/index');
 const createError = require('http-errors');
 
 module.exports = class TaskController {
@@ -19,12 +19,37 @@ module.exports = class TaskController {
 
   static async createTask(req, res, next) {
     let org_id = req.params.org_id;
+    let userEmail = req.body.email;
+    let title = req.body.title;
+    let category = req.body.category;
     try {
+      console.log(userEmail, title, category);
+      if (!userEmail || !title || !category){
+        throw createError(400, 'Bad Request, please fill all form fields')
+      }
+      let user = await User.findOne({
+        where: {
+          email: userEmail,
+        }
+      })
+      if(!user){
+        throw createError(404, 'Error User not found')
+      }
+      let isMember = await UserOrganization.findOne({
+        where: {
+          OrganizationId: org_id,
+          UserId: user.id
+        }
+      })
+      if (!isMember) {
+        throw createError(401, 'Error User not a member of this org')
+      }
+      let UserId = user.id;
       let newTask = await Task.create({
-        title: req.body.title,
-        category: req.body.category,
+        title,
+        category,
         OrganizationId: org_id,
-        UserId: req.decoded.id,
+        UserId
       })
       res.status(201).json(newTask)
     } catch (err) {
