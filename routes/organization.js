@@ -8,6 +8,8 @@ router.get("/", OrgController.getOrg); // mendapatkan list semua organisasi yang
 // router.put("/:org_id", OrgController.editOrg) //edit organizations name
 router.delete("/:org_id",authorize, OrgController.delOrg); // delete Org
 router.post("/:org_id", authorize,OrgController.addMember); // addMember
+router.get("/:org_id", authorize,OrgController.getOrgById); // addMember
+
 
 router.use('/:org_id', authorize)
 

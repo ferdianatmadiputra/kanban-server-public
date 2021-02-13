@@ -1,12 +1,13 @@
 **USER**
 -------------------------------
 * POST /user/register
-  req.body:
-  firstName:string
-  lastName: string
-  email: string
-  password: string
-res status 201
+  
+req.body:\
+  firstName:string\
+  lastName: string\
+  email: string\
+  password: string\
+res status 201:
 ```
 {
   "email": "abc@gmail.com",
@@ -15,7 +16,7 @@ res status 201
   "profPic": "https://ui-avatars.com/api/?background=random&name=abc+def&rounded=true"
 }
 ```
-error response status 400
+error response status 400:
 ```
 {
   "errors": [
@@ -30,16 +31,17 @@ error response status 400
 ```
 -------------------------------
 * POST /user/login
-req body:
-  email: string
-  password: string
-res status 200
+  
+req body:\
+  email: string\
+  password: string\
+res status 200:
 ```
 {
   "access_token": "<access_token>"
 }
 ```
-res error status 400
+res error status 400:
 ```
 {
   "message": "Invalid email or password"
@@ -47,8 +49,9 @@ res error status 400
 ```
 -------------------------------
 * POST /user/googlelogin
-req body: not required
-res status 200
+
+req body: not required\
+res status 200:
 ```
 {
   "access_token": "<access_token>"
@@ -60,9 +63,10 @@ res status 200
 **ORGANIZATION**
 -------------------------------
 * POST /org
-req.body: name: <name of new Organization>
 
-res status 201
+req.body: name: name of new Organization\
+req.headers: access_token\
+res status 201:
 ```
 {
     "id": 7,
@@ -73,10 +77,10 @@ res status 201
 ```
 -------------------------------
 * GET /org
-fetch all organization that logged user is in
-req.headers = access_token
 
-res status 200
+fetch all organization that logged user is in\
+req.headers = access_token\
+res status 200:
 ```
 [
   {
@@ -115,9 +119,9 @@ res status 200
 -------------------------------
 
 * DEL /org/:org_id
-req.headers = access_token
 
-res status 200
+req.headers = access_token\
+res status 200:
 ```
 {
   "message": "organization deleted  successfully"
@@ -125,10 +129,11 @@ res status 200
 ```
 -------------------------------
 * POST /org/:org_id
-  add new member to an organization
-req.headers = access_token
-req.body = email(string)
-res status 201
+
+add new member to an organization\
+req.headers = access_token\
+req.body = email(string)\
+res status 201:
 ```
 {
   "UserId": 1,
@@ -147,10 +152,10 @@ res status 400
 -------------------------------
 **TASKS**
 -------------------------------
-POST /org/:org_id/task
-req.headers: access_token
+* POST /org/:org_id/task
 
-res status 201
+req.headers: access_token\
+res status 201:
 ```
 {
   "id": 1,
@@ -162,7 +167,7 @@ res status 201
   "createdAt": "2021-02-10T11:22:21.642Z"
 }
 ```
-error response 400
+error response 400:
 ```
 {
   "errors": [
@@ -172,10 +177,10 @@ error response 400
 }
 ```
 -------------------------------
-GET /org/:org_id/task
-req.headers: access_token
+* GET /org/:org_id/task
 
-res status 200
+req.headers: access_token\
+res status 200:
 ```
 [
   {
@@ -199,10 +204,11 @@ res status 200
 ]
 ```
 -------------------------------
-PUT /org/:org_id/task/:task_id
-req.headers: access_token
-req.body: title(string), category(string)
-res status 200
+* PUT /org/:org_id/task/:task_id
+
+req.headers: access_token\
+req.body: title(string), category(string)\
+res status 200:
 ```
 {
   "id": 4,
@@ -214,17 +220,18 @@ res status 200
   "updatedAt": "2021-02-10T11:45:31.012Z"
 }
 ```
-response error 404
+response error 404:
 ```
 {
   "message": "Error Task not found"
 }
 ```
 -------------------------------
-PATCH /org/:org_id/task/:task_id
-req.headers: access_token
-req.body: category(string)
-res status 200
+* PATCH /org/:org_id/task/:task_id
+
+req.headers: access_token\
+req.body: category(string)\
+res status 200:
 ```
 {
   "id": 4,
@@ -236,23 +243,24 @@ res status 200
   "updatedAt": "2021-02-10T11:45:31.012Z"
 }
 ```
-response error 404
+response error 404:
 ```
 {
   "message": "Error Task not found"
 }
 ```
 -------------------------------
-DELETE /org/:org_id/task/:task_id
-req.headers: access_token
-req.body: not required
-res status 200
+* DELETE /org/:org_id/task/:task_id
+
+req.headers: access_token\
+req.body: not required\
+res status 200:
 ```
 {
   "message": "task deleted successfully"
 }
 ```
-response error 404
+response error 404:
 ```
 {
   "message": "Error Task not found"
@@ -262,32 +270,32 @@ response error 404
 
 **Global Error Response**
 
-res error 401
+res error 401:
 ```
 {
   "message": "invalid token"
 }
 ```
-res error 401
+res error 401:
 ```
 {
   "message": "Unauthorized"
 }
 ```
-res error 404
+res error 404:
 ```
 {
   "message": "Error not found"
 }
 ```
-res error 404
+res error 404:
 ```
 {
   "message": "Error Organization not found"
 }
 ```
 
-res error 500
+res error 500:
 ```
 {
   "message": "internal server error"

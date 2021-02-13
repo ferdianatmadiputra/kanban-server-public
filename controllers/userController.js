@@ -24,34 +24,42 @@ class UserController {
 
   static postLogin(req, res, next) {
     const { email, password } = req.body;
+    console.log(req.body, 'ini isi req body aneh sekali')
     User.findOne({
       where: {
         email
       },
     })
       .then((user) => {
+        console.log(user)
         if (!user)
           throw createError(400, 'Invalid email or password');
         const comparedPassword = comparePass(password, user.password);
         if (!comparedPassword) 
           throw createError(400, 'Invalid email or password');
 
-        const access_token = generateToken({
+        let dataUser = {
           id: user.id,
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
           profPic: user.profPic
+        }
+        const access_token = generateToken(dataUser);
+        res.status(200).json({
+          access_token,
+          dataUser
         });
-        res.status(200).json({ access_token });
       })
       .catch((err) => {
+        console.log(err)
         next(err);
       });
   }
 
   static googleLogin(req, res, next) {
     const client = new OAuth2Client(process.env.CLIENT_ID);
+    let id;
     let email;
     let firstName;
     let lastName;
@@ -64,6 +72,7 @@ class UserController {
     .then((ticket) => {
       const payload = ticket.getPayload();
       console.log(payload);
+      id = payload.id;
       email = payload.email;
       firstName = payload.given_name;
       lastName = payload.family_name;
@@ -77,9 +86,21 @@ class UserController {
         //generate token
         let token = generateToken({
           id: user.id,
-          email: user.email
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          profPic: user.profPic
         })
-        res.status(200).json({access_token: token})
+        res.status(200).json({
+          access_token: token,
+          dataUser: {
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            profPic: user.profPic
+          }
+        })
       } else {
         return User.create({
           email,
@@ -96,7 +117,16 @@ class UserController {
             lastName: registeredUser.lastName,
             profPic: registeredUser.profPic
           })
-          res.status(201).json({access_token: token})
+          res.status(201).json({
+            access_token: token,
+            dataUser: {
+              id: registeredUser.id,
+              email: registeredUser.email,
+              firstName: registeredUser.firstName,
+              lastName: registeredUser.lastName,
+              profPic: registeredUser.profPic
+            }
+          })
         })
       }
     })

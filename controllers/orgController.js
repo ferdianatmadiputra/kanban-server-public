@@ -1,4 +1,4 @@
-const { Organization, User, UserOrganization } = require('../models/index');
+const { Organization, User, UserOrganization, Task } = require('../models/index');
 const createError = require('http-errors');
 
 module.exports = class OrgController {
@@ -63,6 +63,9 @@ module.exports = class OrgController {
           email 
         },
       })
+      if(!user){
+        throw createError(404, 'User not found')
+      }
       let isMember = await UserOrganization.findOne({
         where: {
           UserId: user.id,
@@ -80,6 +83,37 @@ module.exports = class OrgController {
       }
     } catch (err) {
       next(err);
+    }
+  }
+
+  static async getOrgById(req, res, next) {
+    let organizationId = req.params.org_id;
+    console.log(organizationId,'ini dari controller')
+    try {
+      let org = await Organization.findOne({
+        where: {id: organizationId},
+        include: [{
+            model: User,
+            attributes: ['profPic','id', 'firstName', 'lastName'],
+            through: {attributes:[]},
+
+          },
+          {
+            model: Task,
+            include: {
+              model: User
+            }
+            // attributes: ['title','category','UserId'],
+            // through: {attributes:[]},
+          }
+        ]
+      })
+      console.log(org)
+      res.status(200).json(org)
+
+    } catch (err) {
+      console.log(err)
+      next(err)
     }
   }
 }
