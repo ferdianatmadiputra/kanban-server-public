@@ -223,7 +223,7 @@ res status 200:
 * PUT /org/:org_id/task/:task_id
 
 req.headers: access_token\
-req.body: title(string), category(string)\
+req.body: title(string), category(string), email(string)\
 res status 200:
 ```
 {

@@ -33,7 +33,7 @@ module.exports = class TaskController {
         }
       })
       if(!user){
-        throw createError(404, 'Error User not found')
+        throw createError(404, 'Error Assigned User not found')
       }
       let isMember = await UserOrganization.findOne({
         where: {
@@ -42,7 +42,7 @@ module.exports = class TaskController {
         }
       })
       if (!isMember) {
-        throw createError(401, 'Error User not a member of this org')
+        throw createError(401, 'Error Assigned User not a member of this org')
       }
       let UserId = user.id;
       let newTask = await Task.create({
@@ -61,9 +61,32 @@ module.exports = class TaskController {
     //errorhandler org sudah di authorize
     let OrganizationId = req.params.org_id;
     let task_id = req.params.task_id;
-    let UserId = req.decoded.id;
-    let {title, category} = req.body;
+    let {title, category, email} = req.body;
+    console.log({title, category, email})
     try {
+      if (!email || !title || !category){
+        throw createError(400, 'Bad Request, please fill all form fields')
+      }
+      let user = await User.findOne({
+        where: {
+          email:email
+        }
+      })
+      if(!user){
+
+        console.log(user,'ini isi user')
+        throw createError(404, 'Error Assigned User not found')
+      }
+      let isMember = await UserOrganization.findOne({
+        where: {
+          OrganizationId,
+          UserId: user.id
+        }
+      })
+      if (!isMember) {
+        throw createError(401, 'Error Assigned User not a member of this org')
+      }
+      let UserId = user.id;
       let task = await Task.update({ title, category, OrganizationId, UserId },{
         where: { id: task_id },
         returning: true
